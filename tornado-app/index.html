@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tornado Tools</title>
+</head>
+<body>
+  <h1>Installed Python Packages</h1>
+  <ul>
+    {% for package, version in packages.items() %}
+      <li>{{ package }}: {{ version }}</li>
+    {% end %}
+  </ul>
+
+  <h1>NumPy Generated Plot</h1>
+  <img src="data:image/png;base64,{{ plot_image }}" alt="Sine Wave Plot">
+</body>
+</html>

@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:  
+  database:  
+    build: ./database  
+    container_name: poc_database  
+    restart: always  
+    environment:  
+      - POSTGRES_USER=user  
+      - POSTGRES_PASSWORD=password  
+      - POSTGRES_DB=appdb  
+    volumes:  
+      - postgres_data:/var/lib/postgresql/data  
+    ports:  
+      - "5432:5432"
+
+  nuxt-app:  
+    build:  
+      context: ./nuxt-app  
+    container_name: poc_nuxt_app  
+    restart: always  
+    environment:  
+      - DATABASE_URL=postgres://user:password@database:5432/appdb  
+    depends_on:  
+      - database
+
+  tornado-app:  
+    build:  
+      context: ./tornado-app  
+    container_name: poc_tornado_app  
+    restart: always  
+    depends_on:  
+      - database
+
+  angular-app:  
+    build:  
+      context: ./angular-app  
+    container_name: poc_angular_app  
+    restart: always
+
+  proxy:  
+    image: nginx:alpine  
+    container_name: poc_proxy  
+    restart: always  
+    volumes:  
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  
+    ports:  
+      - "80:80"  
+    depends_on:  
+      - nuxt-app  
+      - tornado-app  
+      - angular-app
+
+volumes:  
+  postgres_data:
