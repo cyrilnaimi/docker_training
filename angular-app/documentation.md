@@ -108,3 +108,30 @@ CMD ["nginx", "-g", "daemon off;"]
     *   Defines the command to start the Nginx server in the foreground, which is necessary for Docker containers.
 
 This multi-stage Dockerfile results in a small and efficient Angular application image, served by Nginx.
+
+## 5. Unit Testing
+
+Unit tests for the Angular application are written using [Karma](https://karma-runner.github.io/latest/index.html) and [Jasmine](https://jasmine.github.io/).
+
+### Test File Location
+
+Test files are typically located alongside the code they test, following a `*.spec.ts` naming convention (e.g., `src/app/app.component.spec.ts`).
+
+### Running Tests
+
+To run all unit tests for the Angular application, execute the following command from within the `angular-app/` directory:
+
+```bash
+npm run test
+```
+
+### Generating Coverage Reports
+
+To generate a code coverage report, use the following command:
+
+```bash
+npm run test -- --code-coverage
+```
+
+This will generate a coverage report in the `coverage/` directory.
+

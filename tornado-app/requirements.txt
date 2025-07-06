@@ -3,3 +3,5 @@ numpy
 matplotlib  
 psycopg2-binary  
 geojson
+pytest
+pytest-cov

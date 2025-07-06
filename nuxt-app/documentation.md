@@ -111,3 +111,30 @@ CMD ["node", "server/index.mjs"]
     *   Defines the command that will be executed when the container starts. It runs the compiled Nuxt.js server-side application.
 
 This multi-stage Dockerfile ensures that the final `nuxt-app` image is as small and efficient as possible, containing only the necessary runtime code.
+
+## 5. Unit Testing
+
+Unit tests for the Nuxt.js application are written using [Vitest](https://vitest.dev/) and `@vue/test-utils`.
+
+### Test File Location
+
+Test files are typically located alongside the code they test, following a `*.test.ts` or `*.spec.ts` naming convention (e.g., `pages/login.test.vue`, `server/api/login.post.test.ts`).
+
+### Running Tests
+
+To run all unit tests for the Nuxt.js application, execute the following command from within the `nuxt-app/` directory:
+
+```bash
+npm run test
+```
+
+### Generating Coverage Reports
+
+To generate a code coverage report, use the following command:
+
+```bash
+npm run test -- --coverage
+```
+
+This will generate a coverage report in the `coverage/` directory.
+

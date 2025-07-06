@@ -5,14 +5,20 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "test": "vitest"
   },
   "devDependencies": {
-    "nuxt": "^3.0.0"
+    "@nuxt/test-utils": "^3.19.2",
+    "@vue/server-renderer": "^3.5.17",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^26.1.0",
+    "nuxt": "^3.0.0",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@nuxt/ui": "^2.0.0",
-    "pg": "^8.8.0",
-    "bcrypt": "^5.1.0"
+    "bcrypt": "^5.1.0",
+    "pg": "^8.8.0"
   }
 }

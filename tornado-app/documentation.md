@@ -72,3 +72,38 @@ CMD ["python", "main.py"]
     *   Defines the command that will be executed when the container starts. It runs the `main.py` script, which starts the Tornado web server.
 
 This Dockerfile creates a self-contained environment for the Tornado application, ensuring all dependencies are met and the application can run reliably.
+
+## 4. Unit Testing
+
+Unit tests for the Tornado application are written using [Pytest](https://docs.pytest.org/en/stable/).
+
+### Test File Location
+
+Test files are typically located in a `tests/` directory within the `tornado-app/` folder and follow the `test_*.py` or `*_test.py` naming convention (e.g., `tests/test_main.py`).
+
+### Running Tests
+
+To run all unit tests for the Tornado application, execute the following command from within the `tornado-app/` directory:
+
+```bash
+pytest
+```
+
+### Generating Coverage Reports
+
+To generate a code coverage report, first ensure `pytest-cov` is installed (add it to `requirements.txt` if not already present).
+
+Then, run the following command:
+
+```bash
+pytest --cov=.
+```
+
+This will generate a coverage report in the console. For a more detailed HTML report, use:
+
+```bash
+pytest --cov=. --cov-report=html
+```
+
+This will create an `htmlcov/` directory with the detailed report.
+
