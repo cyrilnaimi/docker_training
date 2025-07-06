@@ -10,6 +10,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor  
 import geojson
 
+print("Starting main.py")
+
 # --- Database Connection ---
 def get_db_connection():  
     return psycopg2.connect("dbname='appdb' user='user' password='password' host='database'")
@@ -76,12 +78,14 @@ class PointsApiHandler(tornado.web.RequestHandler):
         self.write({"status": "deleted", "id": point_id})
 
 def make_app():  
+    print("Making Tornado application...")
     return tornado.web.Application([  
         (r"/", MainHandler),  
         (r"/api/points/", PointsApiHandler),  
     ], template_path=".")
 
 if __name__ == "__main__":  
+    print("Running Tornado application...")
     app = make_app()  
     app.listen(8888)  
     tornado.ioloop.IOLoop.current().start()

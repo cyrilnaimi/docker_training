@@ -25,7 +25,8 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "./node_modules/ol/ol.css"
             ]
           },
           "configurations": {
@@ -42,7 +43,8 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "baseHref": "/map/"
             },
             "development": {
               "optimization": false,

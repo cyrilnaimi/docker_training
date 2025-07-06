@@ -33,6 +33,26 @@
 
 *   [x] **Task 3.1: Full System Integration**
     *   [x] Run `docker-compose up --build -d` to launch the full system.
-    *   [ ] Test all user flows as described in the acceptance criteria.
-*   [ ] **Task 3.2: Document Operational Procedures**
-    *   [ ] Update the main `README.md` with instructions for the offline update process and the development workflow with hot-reloading.
+    *   [x] Test all user flows as described in the acceptance criteria.
+*   [x] **Task 3.2: Document Operational Procedures**
+    *   [x] Update the main `README.md` with instructions for the offline update process and the development workflow with hot-reloading.
+*   [ ] **Task 3.3: Versionning **
+
+### Phase 4: Enhancement
+
+*   [ ] **Task 4.1: Nuxt app**
+    *   [ ] Refine the login page's CSS for a modern and user-friendly aesthetic, ensuring responsiveness and visual appeal.
+    *   [ ] Redesign the dashboard with an improved layout, incorporating cards and a well-styled header with intuitive buttons for enhanced user experience and visual consistency.
+    *   [ ] Implement a 'Create New User' button on the login page, enabling new user registration and seamless login after account creation.
+    *   [ ] Integrate a user list display on the dashboard, showing registered users with relevant details (e.g., email, registration date).
+*   [ ] **Task 4.2: Tornado app**
+    *   [ ] Extend the Tornado app to leverage TimescaleDB for time-series data management. Develop a new dedicated page for generating and visualizing simulated datacenter sensor data (CPU, memory, network speed, bandwidth). Implement functionalities to generate one month of fake data, clear existing data, and display interactive charts using Apache ECharts with zoom capabilities for detailed analysis.
+
+### Phase 5: HotUpdate
+*   [ ] Develop comprehensive documentation and a step-by-step guide on utilizing Watchtower for automated, seamless deployment of new container images for the application, ensuring minimal downtime.
+*   [ ] Demonstrate the Watchtower deployment process by applying the enhancements developed in Phase 4, validating the automated update mechanism.
+
+### Phase 6: UnitTest
+*   [ ] Create detailed documentation and a 'how-to' guide for setting up and writing unit tests across all application components (Nuxt.js, Tornado, Angular), adhering to best practices.
+*   [ ] Develop a comprehensive suite of unit tests for all critical functionalities within the Nuxt.js, Tornado, and Angular applications to ensure code quality and reliability.
+*   [ ] Generate and analyze a test coverage report for the entire application, identifying areas with insufficient test coverage and providing recommendations for improvement.

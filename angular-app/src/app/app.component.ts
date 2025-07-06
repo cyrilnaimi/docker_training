@@ -69,8 +69,8 @@ export class AppComponent implements OnInit {
   }
 
   getPoints() {
-    this.http.get<any[]>('/api/points/').subscribe(points => {
-      const features = points.map(p => {
+    this.http.get<any>('/api/points/').subscribe((response: any) => {
+      const features = response.features.map((p: any) => {
         const feature = new Feature(new Point(fromLonLat([p.geometry.coordinates[0], p.geometry.coordinates[1]])))
         feature.set('id', p.properties.id);
         return feature;
