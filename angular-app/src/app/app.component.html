@@ -1,2 +1,40 @@
-<div id="map" class="map" style="width: 100%; height: 400px;"></div>
-<button (click)="deleteLastPoint()">Delete Last Point</button>
+<div class="main-container">
+  <div id="map" class="map-container"></div>
+  <div class="sidebar-container">
+    <div class="card">
+      <div class="card-header">
+        <h3>Map Controls</h3>
+      </div>
+      <div class="card-body">
+        <button (click)="deleteLastPoint()" class="button">Delete Last Point</button>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h3>Last 10 Points</h3>
+      </div>
+      <div class="card-body">
+        <table class="points-table">
+          <thead>
+            <tr>
+              <th>Lat</th>
+              <th>Lon</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let point of last10Points">
+              <td>{{ point.lat | number:'1.4-4' }}</td>
+              <td>{{ point.lon | number:'1.4-4' }}</td>
+              <td>{{ point.created_at | date:'short' }}</td>
+            </tr>
+            <tr *ngIf="last10Points.length === 0">
+              <td colspan="3" class="no-points">No points yet. Click on the map to add some!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

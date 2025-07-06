@@ -2,16 +2,78 @@
 <html>
 <head>
   <title>Tornado Tools</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif; /* Assuming Inter font is available or a similar sans-serif */
+      background-color: #f4f4f4; /* Light gray background */
+      color: #333; /* Dark text */
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #ffffff; /* White card background */
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+    }
+    h1 {
+      color: #007bff; /* Primary blue for headings */
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 30px;
+    }
+    li {
+      background-color: #e9ecef; /* Lighter gray for list items */
+      border-left: 5px solid #007bff; /* Blue accent */
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-size: 1.1em;
+    }
+    .button-container {
+      text-align: center;
+    }
+    .button {
+      display: inline-block;
+      background-color: #28a745; /* Green for action button */
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1em;
+      cursor: pointer;
+      text-decoration: none; /* Remove underline from link */
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #218838;
+    }
+  </style>
 </head>
 <body>
-  <h1>Installed Python Packages</h1>
-  <ul>
-    {% for package, version in packages.items() %}
-      <li>{{ package }}: {{ version }}</li>
-    {% end %}
-  </ul>
+  <div class="container">
+    <h1>Installed Python Packages</h1>
+    <ul>
+      {% for package, version in packages.items() %}
+        <li>{{ package }}: {{ version }}</li>
+      {% end %}
+    </ul>
 
-  <h1>NumPy Generated Plot</h1>
-  <img src="data:image/png;base64,{{ plot_image }}" alt="Sine Wave Plot">
+    <div class="button-container">
+      <a href="/tools/sensor_data" class="button">Timescale Dashboard</a>
+    </div>
+  </div>
 </body>
 </html>

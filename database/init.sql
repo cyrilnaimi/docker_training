@@ -23,6 +23,17 @@ CREATE TABLE map_points (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()  
 );
 
+-- Sensor data table for the Tornado app
+CREATE TABLE sensor_data (
+    time TIMESTAMPTZ NOT NULL,
+    cpu_usage DOUBLE PRECISION,
+    memory_usage DOUBLE PRECISION,
+    network_speed DOUBLE PRECISION,
+    bandwidth_usage DOUBLE PRECISION
+);
+
+SELECT create_hypertable('sensor_data', 'time');
+
 -- Insert some dummy data to start with  
-INSERT INTO users (email, password) VALUES ('test@example.com', '1234');  
+  
 INSERT INTO dashboard_stats (stat_name, stat_value) VALUES ('clicks', 10), ('items_processed', 42), ('logins', 1);

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sensor Data Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 1200px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .controls { text-align: center; margin-bottom: 20px; }
+        .controls button { padding: 10px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; background-color: #007bff; color: white; font-size: 16px; }
+        .controls button:hover { background-color: #0056b3; }
+        .chart-container { display: flex; flex-wrap: wrap; justify-content: center; }
+        .chart { width: 48%; height: 300px; margin: 1%; border: 1px solid #ddd; border-radius: 5px; background: #fff; }
+        @media (max-width: 768px) {
+            .chart { width: 98%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Datacenter Sensor Data</h1>
+        <div class="controls">
+            <button onclick="generateData()">Generate 1 Month of Data</button>
+            <button onclick="clearData()">Clear Data</button>
+            <button onclick="fetchAndRenderData()">Refresh Charts</button>
+        </div>
+        <div class="chart-container">
+            <div id="cpuChart" class="chart"></div>
+            <div id="memoryChart" class="chart"></div>
+            <div id="networkChart" class="chart"></div>
+            <div id="bandwidthChart" class="chart"></div>
+        </div>
+    </div>
+
+    <script>
+        const charts = {};
+
+        function initChart(id, title) {
+            const chartDom = document.getElementById(id);
+            const myChart = echarts.init(chartDom);
+            charts[id] = myChart;
+            myChart.setOption({
+                title: { text: title, left: 'center' },
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'time' },
+                yAxis: { type: 'value' },
+                dataZoom: [
+                    { type: 'inside', start: 0, end: 100 },
+                    { start: 0, end: 100 }
+                ],
+                series: [{ type: 'line', showSymbol: false, smooth: true }]
+            });
+        }
+
+        initChart('cpuChart', 'CPU Usage (%)');
+        initChart('memoryChart', 'Memory Usage (%)');
+        initChart('networkChart', 'Network Speed (Mbps)');
+        initChart('bandwidthChart', 'Bandwidth Usage (MB/s)');
+
+        async function fetchData() {
+            const response = await fetch('/api/sensor_data/fetch');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        }
+
+        function renderCharts(data) {
+            const cpuData = data.map(item => [item.time, item.cpu_usage]);
+            const memoryData = data.map(item => [item.time, item.memory_usage]);
+            const networkData = data.map(item => [item.time, item.network_speed]);
+            const bandwidthData = data.map(item => [item.time, item.bandwidth_usage]);
+
+            charts.cpuChart.setOption({ series: [{ data: cpuData }] });
+            charts.memoryChart.setOption({ series: [{ data: memoryData }] });
+            charts.networkChart.setOption({ series: [{ data: networkData }] });
+            charts.bandwidthChart.setOption({ series: [{ data: bandwidthData }] });
+        }
+
+        async function fetchAndRenderData() {
+            try {
+                const data = await fetchData();
+                renderCharts(data);
+            } catch (error) {
+                console.error("Error fetching or rendering data:", error);
+                alert("Failed to fetch sensor data. Please check the console for details.");
+            }
+        }
+
+        async function generateData() {
+            try {
+                const response = await fetch('/api/sensor_data/generate', { method: 'POST' });
+                const result = await response.json();
+                alert(result.message);
+                if (response.ok) {
+                    fetchAndRenderData(); // Refresh charts after generating data
+                }
+            } catch (error) {
+                console.error("Error generating data:", error);
+                alert("Failed to generate sensor data. Please check the console for details.");
+            }
+        }
+
+        async function clearData() {
+            try {
+                const response = await fetch('/api/sensor_data/clear', { method: 'POST' });
+                const result = await response.json();
+                alert(result.message);
+                if (response.ok) {
+                    fetchAndRenderData(); // Clear charts after clearing data
+                }
+            } catch (error) {
+                console.error("Error clearing data:", error);
+                alert("Failed to clear sensor data. Please check the console for details.");
+            }
+        }
+
+        // Initial data load
+        fetchAndRenderData();
+    </script>
+</body>
+</html>

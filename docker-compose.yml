@@ -5,12 +5,13 @@ services:
     build: ./database  
     container_name: poc_database  
     restart: always  
+    user: postgres  
     environment:  
       - POSTGRES_USER=user  
       - POSTGRES_PASSWORD=password  
       - POSTGRES_DB=appdb  
     volumes:  
-      - postgres_data:/var/lib/postgresql/data  
+      - postgres_data:/home/postgres/pgdata/data  
     ports:  
       - "5432:5432"
 
@@ -20,7 +21,12 @@ services:
     container_name: poc_nuxt_app  
     restart: always  
     environment:  
-      - DATABASE_URL=postgres://user:password@database:5432/appdb  
+      - DATABASE_URL=postgres://user:password@database:5432/appdb
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=appdb  
     depends_on:  
       - database
 
@@ -52,4 +58,4 @@ services:
       - angular-app
 
 volumes:  
-  postgres_data:
+  postgres_data: {} 

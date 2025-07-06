@@ -1,4 +1,4 @@
-import { createError, defineEventHandler, readBody } from 'h3';
+import { defineEventHandler, readBody } from 'h3';
 import { Client } from 'pg';
 import bcrypt from 'bcrypt';
 
@@ -19,22 +19,20 @@ export default defineEventHandler(async (event) => {
 
   try {
     await client.connect();
-    const result = await client.query('SELECT * FROM users WHERE email = $1', [email]);
 
-    if (result.rows.length === 0) {
-      throw createError({ statusCode: 401, statusMessage: 'Invalid credentials.' });
+    // Check if user already exists
+    const userExists = await client.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userExists.rows.length > 0) {
+      throw createError({ statusCode: 409, statusMessage: 'User with this email already exists.' });
     }
 
-    const user = result.rows[0];
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    // Hash password and insert new user
+    const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds = 10
+    await client.query('INSERT INTO users (email, password) VALUES ($1, $2)', [email, hashedPassword]);
 
-    if (!passwordMatch) {
-      throw createError({ statusCode: 401, statusMessage: 'Invalid credentials.' });
-    }
-
-    return { message: 'Login successful.' };
+    return { message: 'User registered successfully.' };
   } catch (error) {
-    console.error('Error during login:', error);
+    console.error('Error during registration:', error);
     throw createError({ statusCode: 500, statusMessage: 'Internal Server Error' });
   } finally {
     await client.end();

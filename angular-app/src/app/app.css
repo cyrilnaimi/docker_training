@@ -1,3 +1,97 @@
-#map {
-  background-color: red;
+.main-container {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+  font-family: 'Inter', sans-serif; /* Assuming Inter font is available or a similar sans-serif */
+  background-color: #f4f4f4; /* Light gray background */
+  color: #333; /* Dark text */
+}
+
+.map-container {
+  flex: 2; /* Takes 2/3 of the space */
+  height: 100%;
+  border-right: 1px solid #ddd; /* Separator line */
+}
+
+.sidebar-container {
+  flex: 1; /* Takes 1/3 of the space */
+  padding: 20px;
+  overflow-y: auto; /* Scroll if content overflows */
+  background-color: #f8f8f8; /* Slightly different background for sidebar */
+}
+
+.card {
+  background-color: #ffffff; /* White card background */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: #e9ecef; /* Lighter gray for card header */
+  padding: 15px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #007bff; /* Primary blue for card heading */
+  font-size: 1.2em;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.button {
+  display: inline-block;
+  background-color: #dc3545; /* Red for delete button */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  width: 100%; /* Full width button */
+}
+
+.button:hover {
+  background-color: #c82333;
+}
+
+.mt-4 {
+  margin-top: 20px;
+}
+
+.points-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.points-table th,
+.points-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.points-table th {
+  background-color: #f2f2f2;
+  color: #555;
+}
+
+.points-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.points-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.points-table .no-points {
+  text-align: center;
+  font-style: italic;
+  color: #777;
 }

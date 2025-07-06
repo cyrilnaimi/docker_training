@@ -9,6 +9,8 @@ import json
 import psycopg2  
 from psycopg2.extras import RealDictCursor  
 import geojson
+from datetime import datetime, timedelta
+import random
 
 print("Starting main.py")
 
@@ -38,6 +40,77 @@ class MainHandler(tornado.web.RequestHandler):
         # 3. Render HTML  
         self.render("index.html", packages=installed_packages, plot_image=data)
 
+class SensorDataHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render("sensor_data.html")
+
+class GenerateSensorDataHandler(tornado.web.RequestHandler):
+    def post(self):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            # Clear existing data
+            cur.execute("TRUNCATE TABLE sensor_data;")
+
+            # Generate one month of fake data
+            end_time = datetime.now()
+            start_time = end_time - timedelta(days=30)
+            current_time = start_time
+
+            while current_time <= end_time:
+                cpu = round(random.uniform(20, 80), 2)
+                memory = round(random.uniform(30, 90), 2)
+                network = round(random.uniform(100, 1000), 2)
+                bandwidth = round(random.uniform(50, 500), 2)
+                cur.execute(
+                    "INSERT INTO sensor_data (time, cpu_usage, memory_usage, network_speed, bandwidth_usage) VALUES (%s, %s, %s, %s, %s)",
+                    (current_time, cpu, memory, network, bandwidth)
+                )
+                current_time += timedelta(minutes=5) # Data every 5 minutes
+            conn.commit()
+            self.write({"status": "success", "message": "Sensor data generated."})
+        except Exception as e:
+            conn.rollback()
+            self.write({"status": "error", "message": str(e)})
+        finally:
+            cur.close()
+            conn.close()
+        self.set_header("Content-Type", "application/json")
+
+class ClearSensorDataHandler(tornado.web.RequestHandler):
+    def post(self):
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            cur.execute("TRUNCATE TABLE sensor_data;")
+            conn.commit()
+            self.write({"status": "success", "message": "Sensor data cleared."})
+        except Exception as e:
+            conn.rollback()
+            self.write({"status": "error", "message": str(e)})
+        finally:
+            cur.close()
+            conn.close()
+        self.set_header("Content-Type", "application/json")
+
+class FetchSensorDataHandler(tornado.web.RequestHandler):
+    def get(self):
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        try:
+            cur.execute("SELECT time, cpu_usage, memory_usage, network_speed, bandwidth_usage FROM sensor_data ORDER BY time ASC;")
+            data = cur.fetchall()
+            # Convert datetime objects to string for JSON serialization
+            for row in data:
+                row['time'] = row['time'].isoformat()
+            self.write(json.dumps(data))
+        except Exception as e:
+            self.write({"status": "error", "message": str(e)})
+        finally:
+            cur.close()
+            conn.close()
+        self.set_header("Content-Type", "application/json")
+
 class PointsApiHandler(tornado.web.RequestHandler):  
     def get(self):  
         conn = get_db_connection()  
@@ -57,14 +130,14 @@ class PointsApiHandler(tornado.web.RequestHandler):
           
         conn = get_db_connection()  
         cur = conn.cursor()  
-        cur.execute("INSERT INTO map_points (geom) VALUES (ST_GeomFromGeoJSON(%s)) RETURNING id",   
+        cur.execute("INSERT INTO map_points (geom) VALUES (ST_GeomFromGeoJSON(%s)) RETURNING id, created_at",   
                     (geojson.dumps(point),))  
-        new_id = cur.fetchone()[0]  
+        new_id, created_at = cur.fetchone()  
         conn.commit()  
         cur.close()  
         conn.close()
 
-        self.write({"status": "success", "id": new_id})  
+        self.write({"status": "success", "id": new_id, "created_at": created_at.isoformat()})  
         self.set_header("Content-Type", "application/json")  
           
     def delete(self):  
@@ -82,6 +155,10 @@ def make_app():
     return tornado.web.Application([  
         (r"/", MainHandler),  
         (r"/api/points/", PointsApiHandler),  
+        (r"/tools/sensor_data", SensorDataHandler),
+        (r"/api/sensor_data/generate", GenerateSensorDataHandler),
+        (r"/api/sensor_data/clear", ClearSensorDataHandler),
+        (r"/api/sensor_data/fetch", FetchSensorDataHandler),
     ], template_path=".")
 
 if __name__ == "__main__":  
