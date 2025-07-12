@@ -4,8 +4,11 @@
       <template #header>
         <div class="flex justify-between items-center">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h2>
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            Version: {{ $config.public.appVersion }} <br> Commit: {{ $config.public.commitHash }}
+          </div>
           <div class="flex space-x-2">
-            <UButton icon="i-heroicons-arrow-path" @click="stats.refresh()">Refresh Stats</UButton>
+            <UButton icon="i-heroicons-arrow-path" @click="stats.refresh()">Refresh Data</UButton>
             <UButton icon="i-heroicons-users" @click="showUsers = !showUsers">{{ showUsers ? 'Hide Users' : 'Show Users' }}</UButton>
             <UButton icon="i-heroicons-arrow-left-on-rectangle" @click="handleLogout">Logout</UButton>
           </div>

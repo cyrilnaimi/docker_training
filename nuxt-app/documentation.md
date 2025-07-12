@@ -16,12 +16,12 @@ It interacts with the PostgreSQL database (via the `database` service) for user 
 
 The application is built using the Nuxt.js framework (version 3), leveraging Vue.js for the frontend and Nitro for the server-side API routes.
 
-*   **`app.vue`**: The main entry point for the Nuxt.js application.
-*   **`nuxt.config.ts`**: Nuxt.js configuration file, defining modules, build options, and other settings. It includes `@nuxt/ui` for UI components.
+*   **`app.vue`**: The main entry point for the Nuxt.js application, now displaying the application version and Git commit hash.
+*   **`nuxt.config.ts`**: Nuxt.js configuration file, defining modules, build options, and other settings. It includes `@nuxt/ui` for UI components and configures `runtimeConfig` to expose the `commitHash` from the `NUXT_PUBLIC_COMMIT_HASH` environment variable and `appVersion` from `npm_package_version`.
 *   **`pages/` directory**: Contains the Vue components that define the application's routes:
     *   `pages/index.vue`: Redirects to the login page.
     *   `pages/login.vue`: Implements the user login and registration forms. It uses `@nuxt/ui` components for a modern aesthetic.
-    *   `pages/dashboard.vue`: Displays dashboard statistics and a list of registered users. It includes buttons for refreshing stats and logging out.
+    *   `pages/dashboard.vue`: Displays dashboard statistics, a list of registered users, and the application's version and Git commit hash. It includes buttons for refreshing stats and logging out.
 *   **`server/api/` directory**: Contains the server-side API endpoints built with Nuxt's Nitro server:
     *   `server/api/login.post.ts`: Handles user login requests. It queries the `users` table in the PostgreSQL database and uses `bcrypt` to compare the provided password with the stored hashed password.
     *   `server/api/register.post.ts`: Handles new user registration requests. It hashes the user's password using `bcrypt` before inserting the new user into the `users` table. It also checks for existing users to prevent duplicate registrations.
@@ -46,6 +46,9 @@ The `nuxt-app/Dockerfile` defines the steps to build and run the Nuxt.js applica
 # Stage 1: Build the Nuxt.js application
 FROM node:20-alpine AS build
 
+# Build argument for commit hash
+ARG COMMIT_HASH
+
 # Set working directory
 WORKDIR /app
 
@@ -69,6 +72,9 @@ WORKDIR /app
 # Copy only the necessary build output from the build stage
 COPY --from=build /app/.output .
 
+# Set environment variable for commit hash
+ENV NUXT_PUBLIC_COMMIT_HASH=${COMMIT_HASH}
+
 # Expose the port the Nuxt.js application listens on
 EXPOSE 3000
 
@@ -81,6 +87,9 @@ CMD ["node", "server/index.mjs"]
 *   **`FROM node:20-alpine AS build`**:
     *   Uses `node:20-alpine` as the base image for the build stage. Alpine images are lightweight, resulting in smaller final image sizes.
     *   `AS build` names this stage "build" so it can be referenced later.
+
+*   **`ARG COMMIT_HASH`**:
+    *   Declares a build argument `COMMIT_HASH` which will be passed during the Docker build process (e.g., `--build-arg COMMIT_HASH=<hash>`).
 
 *   **`WORKDIR /app`**:
     *   Sets the working directory inside the container to `/app`. All subsequent commands will be executed relative to this directory.
@@ -103,6 +112,9 @@ CMD ["node", "server/index.mjs"]
 
 *   **`COPY --from=build /app/.output .`**:
     *   This is the core of the multi-stage build. It copies *only* the production-ready output from the `/app/.output` directory of the "build" stage to the current stage's `/app` directory. This significantly reduces the final image size by not including development dependencies or build tools.
+
+*   **`ENV NUXT_PUBLIC_COMMIT_HASH=${COMMIT_HASH}`**:
+    *   Sets an environment variable `NUXT_PUBLIC_COMMIT_HASH` in the final image, using the value passed during the build process. This variable is then accessible within the Nuxt.js application via `runtimeConfig`.
 
 *   **`EXPOSE 3000`**:
     *   Informs Docker that the container listens on port 3000 at runtime.

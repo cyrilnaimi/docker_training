@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { versionInfo } from '../environments/version';
 import { Component, OnInit } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -11,6 +12,7 @@ import VectorSource from 'ol/source/Vector';
 import { Vector as VectorLayer } from 'ol/layer';
 import { HttpClient } from '@angular/common/http';
 import { Coordinate } from 'ol/coordinate';
+
 
 interface MapPoint {
   id: number;
@@ -30,6 +32,8 @@ export class AppComponent implements OnInit {
   map!: Map;
   vectorSource!: VectorSource;
   last10Points: MapPoint[] = [];
+  commitHash: string = versionInfo.hash;
+  appVersion: string = versionInfo.version;
 
   constructor(private http: HttpClient) { }
 

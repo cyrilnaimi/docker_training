@@ -28,6 +28,13 @@
               "src/styles.css",
               "src/app/app.css",
               "./node_modules/ol/ol.css"
+            ],
+            "scripts": [
+              {
+                "input": "./scripts/set-version.js",
+                "inject": false,
+                "bundleName": "set-version"
+              }
             ]
           },
           "configurations": {

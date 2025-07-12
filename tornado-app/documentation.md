@@ -18,7 +18,7 @@ The application is built using the Tornado web framework in Python.
 
 *   **`main.py`**: The core Python script containing the Tornado application setup, request handlers, and database interaction logic.
     *   **`get_db_connection()`**: Function to establish a connection to the PostgreSQL database.
-    *   **`MainHandler`**: Handles requests to the root path (`/`) of the Tornado app. It gathers Python package versions and generates a sine wave plot, rendering them into `index.html`.
+    *   **`MainHandler`**: Handles requests to the root path (`/`) of the Tornado app. It gathers Python package versions and generates a sine wave plot, rendering them into `index.html` with the application version and Git commit hash.
     *   **`PointsApiHandler`**: Manages CRUD operations (GET, POST, DELETE) for `map_points` in the database. It uses `psycopg2` for database interaction and `geojson` for handling geospatial data.
     *   **`SensorDataHandler`**: Renders the `sensor_data.html` page, which is the frontend for the TimescaleDB sensor data visualization.
     *   **`GenerateSensorDataHandler`**: Handles POST requests to generate a month's worth of simulated CPU, memory, network speed, and bandwidth data, inserting it into the `sensor_data` hypertable.
@@ -36,12 +36,15 @@ The `tornado-app/Dockerfile` defines the steps to build and run the Tornado appl
 ```dockerfile
 FROM python:3.9-slim
 
+ARG COMMIT_HASH
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+
+ENV COMMIT_HASH=${COMMIT_HASH}
 
 EXPOSE 8888
 
@@ -52,6 +55,9 @@ CMD ["python", "main.py"]
 
 *   **`FROM python:3.9-slim`**:
     *   Uses `python:3.9-slim` as the base image. The `slim` tag indicates a smaller image size, which is beneficial for production deployments.
+
+*   **`ARG COMMIT_HASH`**:
+    *   Declares a build argument `COMMIT_HASH` which will be passed during the Docker build process (e.g., `--build-arg COMMIT_HASH=<hash>`).
 
 *   **`WORKDIR /app`**:
     *   Sets the working directory inside the container to `/app`. All subsequent commands will be executed relative to this directory.
@@ -64,6 +70,9 @@ CMD ["python", "main.py"]
 
 *   **`COPY . .`**:
     *   Copies the entire contents of the current directory (your `tornado-app` folder) into the `/app` directory inside the container.
+
+*   **`ENV COMMIT_HASH=${COMMIT_HASH}`**:
+    *   Sets an environment variable `COMMIT_HASH` in the final image, using the value passed during the build process. This variable is then accessible within the Tornado application.
 
 *   **`EXPOSE 8888`**:
     *   Informs Docker that the container listens on port 8888 at runtime. This is the default port for the Tornado application.

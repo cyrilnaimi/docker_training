@@ -2,12 +2,12 @@
 FROM node:20-alpine AS build  
 WORKDIR /app  
 COPY package*.json ./  
-RUN npm install  
+RUN npm cache clean --force && npm install  
 COPY . .  
 RUN npm run build
 
 # Stage 2: Run the application  
-FROM node:18-alpine  
+FROM node:22-alpine  
 WORKDIR /app  
 COPY --from=build /app/.output .  
 ENV HOST=0.0.0.0  

@@ -1,61 +1,69 @@
 version: '3.8'
 
-services:  
-  database:  
-    build: ./database  
-    container_name: poc_database  
-    restart: always  
-    user: postgres  
-    environment:  
-      - POSTGRES_USER=user  
-      - POSTGRES_PASSWORD=password  
-      - POSTGRES_DB=appdb  
-    volumes:  
-      - postgres_data:/home/postgres/pgdata/data  
-    ports:  
+services:
+  database:
+    image: localhost:5050/database:latest
+    container_name: poc_database
+    restart: always
+    user: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=appdb
+    volumes:
+      - postgres_data:/home/postgres/pgdata/data
+    ports:
       - "5432:5432"
 
-  nuxt-app:  
-    build:  
-      context: ./nuxt-app  
-    container_name: poc_nuxt_app  
-    restart: always  
-    environment:  
+  nuxt-app:
+    image: localhost:5050/nuxt-app:latest
+    container_name: poc_nuxt_app
+    restart: always
+    environment:
       - DATABASE_URL=postgres://user:password@database:5432/appdb
       - DB_HOST=database
       - DB_PORT=5432
       - DB_USER=user
       - DB_PASSWORD=password
-      - DB_NAME=appdb  
-    depends_on:  
+      - DB_NAME=appdb
+    depends_on:
       - database
 
-  tornado-app:  
-    build:  
-      context: ./tornado-app  
-    container_name: poc_tornado_app  
-    restart: always  
-    depends_on:  
+  tornado-app:
+    image: localhost:5050/tornado-app:latest
+    container_name: poc_tornado_app
+    restart: always
+    depends_on:
       - database
 
-  angular-app:  
-    build:  
-      context: ./angular-app  
-    container_name: poc_angular_app  
+  angular-app:
+    image: localhost:5050/angular-app:latest
+    container_name: poc_angular_app
     restart: always
 
-  proxy:  
-    image: nginx:alpine  
-    container_name: poc_proxy  
-    restart: always  
-    volumes:  
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro  
-    ports:  
-      - "80:80"  
-    depends_on:  
-      - nuxt-app  
-      - tornado-app  
+  proxy:
+    image: nginx:alpine
+    container_name: poc_proxy
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - nuxt-app
+      - tornado-app
       - angular-app
 
-volumes:  
+  watchtower:
+    image: containrrr/watchtower
+    command: --interval 30 --cleanup --debug --label-enable
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=30
+      - WATCHTOWER_CLEANUP=true
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+volumes:
   postgres_data: {} 

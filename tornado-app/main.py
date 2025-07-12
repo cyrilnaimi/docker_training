@@ -11,6 +11,7 @@ from psycopg2.extras import RealDictCursor
 import geojson
 from datetime import datetime, timedelta
 import random
+import os
 
 print("Starting main.py")
 
@@ -38,7 +39,9 @@ class MainHandler(tornado.web.RequestHandler):
         data = base64.b64encode(buf.getbuffer()).decode("ascii")  
           
         # 3. Render HTML  
-        self.render("index.html", packages=installed_packages, plot_image=data)
+        commit_hash = os.environ.get('COMMIT_HASH', 'unknown')
+        app_version = os.environ.get('APP_VERSION', '1.0.0')
+        self.render("index.html", packages=installed_packages, plot_image=data, app_version=app_version, commit_hash=commit_hash)
 
 class SensorDataHandler(tornado.web.RequestHandler):
     def get(self):

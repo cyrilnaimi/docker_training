@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import Dashboard from '../../pages/dashboard.vue';
-import { nextTick, defineComponent, h } from 'vue';
+import { nextTick, defineComponent, h, Suspense } from 'vue';
 
 // Mock useFetch and navigateTo
 vi.mock('#app', () => ({
@@ -42,18 +42,19 @@ vi.mock('#imports', () => ({
 
 // Wrapper component to handle Suspense
 const AsyncWrapper = defineComponent({
-  name: 'AsyncWrapper',
-  setup() {
-    return () => h(Dashboard);
-  },
+  components: { Dashboard },
+  template: '<Suspense><Dashboard/></Suspense>',
 });
 
 describe('Dashboard.vue', () => {
   it('renders dashboard stats', async () => {
     const wrapper = mount(AsyncWrapper);
     await nextTick(); // Wait for component to render after async setup
-    expect(wrapper.text()).toContain('clicks: 10');
-    expect(wrapper.text()).toContain('items_processed: 42');
+    await nextTick(); // and again for all children
+    expect(wrapper.text()).toContain('clicks');
+    expect(wrapper.text()).toContain('10');
+    expect(wrapper.text()).toContain('items_processed');
+    expect(wrapper.text()).toContain('42');
   });
 
   it('calls increment when button is clicked', async () => {
@@ -61,7 +62,8 @@ describe('Dashboard.vue', () => {
     vi.stubGlobal('$fetch', mockFetch);
 
     const wrapper = mount(AsyncWrapper);
-    await nextTick(); // Wait for component to render after async setup
+    await nextTick();
+    await nextTick();
 
     const incrementButton = wrapper.findAll('button').filter(b => b.text() === 'Increment')[0];
     await incrementButton.trigger('click');
@@ -72,11 +74,39 @@ describe('Dashboard.vue', () => {
   it('calls navigateTo on logout', async () => {
     const { navigateTo } = await import('#app');
     const wrapper = mount(AsyncWrapper);
-    await nextTick(); // Wait for component to render after async setup
+    await nextTick();
+    await nextTick();
 
     const logoutButton = wrapper.findAll('button').filter(b => b.text() === 'Logout')[0];
     await logoutButton.trigger('click');
 
     expect(navigateTo).toHaveBeenCalledWith('/login');
+  });
+
+  it('toggles user list visibility', async () => {
+    const wrapper = mount(AsyncWrapper);
+    await nextTick();
+    await nextTick();
+
+    // Initially, the user list should be hidden
+    expect(wrapper.find('table').exists()).toBe(false);
+
+    // Click the 'Show Users' button
+    const showUsersButton = wrapper.findAll('button').filter(b => b.text() === 'Show Users')[0];
+    await showUsersButton.trigger('click');
+    await nextTick();
+
+    // Now, the user list should be visible
+    expect(wrapper.find('table').exists()).toBe(true);
+    expect(wrapper.text()).toContain('user1@example.com');
+    expect(wrapper.text()).toContain('user2@example.com');
+
+    // Click the 'Hide Users' button
+    const hideUsersButton = wrapper.findAll('button').filter(b => b.text() === 'Hide Users')[0];
+    await hideUsersButton.trigger('click');
+    await nextTick();
+
+    // The user list should be hidden again
+    expect(wrapper.find('table').exists()).toBe(false);
   });
 });

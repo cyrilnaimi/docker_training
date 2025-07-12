@@ -65,6 +65,10 @@
 <body>
   <div class="container">
     <h1>Installed Python Packages</h1>
+    <div class="version-info">
+      <p>Version: {{ app_version }}</p>
+      <p>Commit: {{ commit_hash }}</p>
+    </div>
     <ul>
       {% for package, version in packages.items() %}
         <li>{{ package }}: {{ version }}</li>
