@@ -4,8 +4,8 @@ export default defineNuxtConfig({
   ],
   runtimeConfig: {
     public: {
-      commitHash: process.env.NUXT_ENV_CURRENT_GIT_SHA || 'unknown',
-      appVersion: process.env.npm_package_version || 'unknown'
+      commitHash: '8bde28d',
+      appVersion: '1.0.1'
     }
   }
 })

@@ -28,6 +28,8 @@ services:
       - DB_NAME=appdb
     depends_on:
       - database
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   tornado-app:
     image: localhost:5050/tornado-app:latest
@@ -35,11 +37,15 @@ services:
     restart: always
     depends_on:
       - database
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   angular-app:
     image: localhost:5050/angular-app:latest
     container_name: poc_angular_app
     restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   proxy:
     image: nginx:alpine

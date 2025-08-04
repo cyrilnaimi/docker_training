@@ -1,6 +1,6 @@
 {
   "name": "nuxt-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "build": "NUXT_ENV_CURRENT_GIT_SHA=`git rev-parse --short HEAD` npx nuxt build",
